@@ -1,0 +1,1 @@
+<?php $collectionType='kids';$heroTitle="KIDS' COLLECTION";$heroSubtitle='Big style for little feet.';$heroDescription='Comfortable pairs made for every adventure.';$categoryOptions=['All','Boys','Girls','Sneakers','School Shoes','Sports','New Arrivals'];include __DIR__.'/../includes/collection_page.php';

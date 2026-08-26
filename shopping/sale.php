@@ -1,0 +1,1 @@
+<?php $collectionType='sale';$heroTitle='SALE';$heroSubtitle='Limited-time deals on your favorite sneakers.';$heroDescription='Fresh pairs. Better prices. Only while stocks last.';$categoryOptions=['All','Sneakers','Best Sellers'];include __DIR__.'/../includes/collection_page.php';

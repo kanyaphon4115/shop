@@ -1,0 +1,4 @@
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS sale_price DECIMAL(10,2) NULL DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS discount TINYINT UNSIGNED NOT NULL DEFAULT 0;
+UPDATE products SET sale_price=ROUND(price*.80,2), discount=20 WHERE on_sale=1 AND sale_price IS NULL;

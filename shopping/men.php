@@ -1,0 +1,1 @@
+<?php $collectionType='men';$heroTitle="MEN'S COLLECTION";$heroSubtitle='Step into your style.';$heroDescription='Shop the latest sneakers for men.';$categoryOptions=['All','Sneakers','Running','Basketball','Lifestyle','New Arrivals','Best Sellers'];include __DIR__.'/../includes/collection_page.php';

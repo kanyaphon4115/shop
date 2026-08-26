@@ -1,0 +1,1 @@
+<?php $collectionType='women';$heroTitle="WOMEN'S COLLECTION";$heroSubtitle='Find your perfect pair.';$heroDescription='Style, comfort and performance.';$categoryOptions=['All','New Arrivals','Sneakers','Lifestyle','Running','Best Sellers','Sale'];include __DIR__.'/../includes/collection_page.php';
