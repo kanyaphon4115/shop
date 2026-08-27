@@ -32,11 +32,21 @@ if (!filter_var($shipping['email'], FILTER_VALIDATE_EMAIL)) {
 }
 
 $paymentMethod = $data['payment_method'] ?? '';
+$paymentMetadata = null;
+if (preg_match('/^saved:(\d+)$/', $paymentMethod, $match)) {
+    $sessionUserId=(int)($_SESSION['user_id']??0);
+    if(!$sessionUserId) reply(false,'Please log in to use a saved payment method.',[],403);
+    $savedId=(int)$match[1];$savedStmt=mysqli_prepare($conn,'SELECT id,provider,brand,last4,expiry_month,expiry_year FROM payment_methods WHERE id=? AND user_id=? LIMIT 1');mysqli_stmt_bind_param($savedStmt,'ii',$savedId,$sessionUserId);mysqli_stmt_execute($savedStmt);$saved=mysqli_stmt_get_result($savedStmt)->fetch_assoc();
+    if(!$saved)reply(false,'That saved payment method is unavailable.',[],422);
+    $paymentMetadata=json_encode(['provider'=>$saved['provider'],'brand'=>$saved['brand'],'last4'=>$saved['last4'],'expiry_month'=>(int)$saved['expiry_month'],'expiry_year'=>(int)$saved['expiry_year']],JSON_UNESCAPED_SLASHES);
+    $paymentMethod='saved_card';
+}
 $statuses = [
     'card' => 'pending',
     'promptpay' => 'pending',
     'bank_transfer' => 'awaiting_verification',
     'cod' => 'pending',
+    'saved_card' => 'pending',
 ];
 if (!isset($statuses[$paymentMethod])) {
     reply(false, 'Please select a valid payment method.', [], 422);
@@ -94,8 +104,8 @@ try {
     $shippingJson = json_encode($shipping, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $paymentStatus = $statuses[$paymentMethod];
     $orderStatus = 'pending';
-    $orderStmt = mysqli_prepare($conn, 'INSERT INTO orders (user_id, total, status, shipping_json, payment_method, payment_status, shipping_fee, discount) VALUES (NULLIF(?, 0), ?, ?, ?, ?, ?, 0.00, 0.00)');
-    mysqli_stmt_bind_param($orderStmt, 'idssss', $userId, $total, $orderStatus, $shippingJson, $paymentMethod, $paymentStatus);
+    $orderStmt = mysqli_prepare($conn, 'INSERT INTO orders (user_id, total, status, shipping_json, payment_method, payment_status, payment_metadata_json, shipping_fee, discount) VALUES (NULLIF(?, 0), ?, ?, ?, ?, ?, ?, 0.00, 0.00)');
+    mysqli_stmt_bind_param($orderStmt, 'idsssss', $userId, $total, $orderStatus, $shippingJson, $paymentMethod, $paymentStatus, $paymentMetadata);
     mysqli_stmt_execute($orderStmt);
     $orderId = mysqli_insert_id($conn);
     $orderNumber = 'SPK-' . date('Y') . str_pad((string) $orderId, 6, '0', STR_PAD_LEFT);

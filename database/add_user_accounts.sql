@@ -1,0 +1,53 @@
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS phone VARCHAR(30) NULL,
+    ADD COLUMN IF NOT EXISTS birthday DATE NULL,
+    ADD COLUMN IF NOT EXISTS gender VARCHAR(20) NULL;
+
+CREATE TABLE IF NOT EXISTS addresses (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    label VARCHAR(50) NOT NULL DEFAULT 'Home',
+    full_name VARCHAR(150) NOT NULL,
+    phone VARCHAR(30) NOT NULL,
+    address_line TEXT NOT NULL,
+    subdistrict VARCHAR(100) NULL,
+    district VARCHAR(100) NOT NULL,
+    province VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL DEFAULT 'Thailand',
+    is_default TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_addresses_user (user_id),
+    CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    provider VARCHAR(40) NOT NULL,
+    payment_method_id VARCHAR(255) NOT NULL,
+    brand VARCHAR(40) NOT NULL,
+    last4 CHAR(4) NOT NULL,
+    expiry_month TINYINT UNSIGNED NOT NULL,
+    expiry_year SMALLINT UNSIGNED NOT NULL,
+    is_default TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_provider_method (provider, payment_method_id),
+    INDEX idx_payment_user (user_id),
+    CONSTRAINT fk_payment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS user_settings (
+    user_id INT PRIMARY KEY,
+    language VARCHAR(10) NOT NULL DEFAULT 'en',
+    currency CHAR(3) NOT NULL DEFAULT 'THB',
+    order_updates TINYINT(1) NOT NULL DEFAULT 1,
+    promotions TINYINT(1) NOT NULL DEFAULT 0,
+    email_notifications TINYINT(1) NOT NULL DEFAULT 1,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_settings_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_metadata_json TEXT NULL;

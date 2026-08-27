@@ -1,8 +1,11 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-$inShopping = strpos(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? ''), '/shopping/') !== false;
-$rootPath = $inShopping ? '../' : '';
-$shopPath = $inShopping ? '' : 'shopping/';
+$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$inShopping = strpos($scriptPath, '/shopping/') !== false;
+$inProfile = strpos($scriptPath, '/profile/') !== false;
+$profileDepth = $inProfile ? substr_count(trim(substr($scriptPath, strpos($scriptPath, '/profile/') + 9), '/'), '/') + 1 : 0;
+$rootPath = $inShopping ? '../' : ($inProfile ? str_repeat('../', $profileDepth) : '');
+$shopPath = $inShopping ? '' : $rootPath . 'shopping/';
 $searchCategory = $searchCategory ?? 'all';
 ?>
 <header class="bg-white shadow-sm">

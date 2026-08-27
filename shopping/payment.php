@@ -9,6 +9,7 @@
 <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
 <section class="rounded bg-white p-5 shadow-sm md:p-7"><h1 class="text-2xl font-bold">Payment method</h1><p class="mt-2 text-sm text-gray-500">Choose one payment option. Online methods remain pending until confirmed by a real gateway.</p>
 <div class="mt-6 grid gap-3 sm:grid-cols-2">
+<div id="savedPaymentMethods" class="contents"></div>
 <label class="method-card cursor-pointer rounded border-2 p-4"><input type="radio" name="payment_method" value="card" class="mr-2 accent-orange-500"><strong>Credit / Debit Card</strong><p class="mt-1 text-xs text-gray-500">Gateway integration required</p></label>
 <label class="method-card cursor-pointer rounded border-2 p-4"><input type="radio" name="payment_method" value="promptpay" class="mr-2 accent-orange-500"><strong>PromptPay QR</strong><p class="mt-1 text-xs text-gray-500">QR placeholder only</p></label>
 <label class="method-card cursor-pointer rounded border-2 p-4"><input type="radio" name="payment_method" value="bank_transfer" class="mr-2 accent-orange-500"><strong>Bank Transfer</strong><p class="mt-1 text-xs text-gray-500">Requires slip verification</p></label>
@@ -32,6 +33,7 @@ const CART_KEY='cart', SHIPPING_KEY='shippingInfo';
 const money=n=>Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const escapeHtml=value=>String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 let cart=[],shipping={};try{cart=JSON.parse(localStorage.getItem(CART_KEY)||'[]');shipping=JSON.parse(localStorage.getItem(SHIPPING_KEY)||'{}')}catch(error){}
+fetch('account_data.php').then(r=>r.json()).then(data=>{if(!data.payment_methods?.length)return;document.querySelector('#savedPaymentMethods').innerHTML=data.payment_methods.map((p,i)=>`<label class="method-card cursor-pointer rounded border-2 p-4"><input type="radio" name="payment_method" value="saved:${p.id}" ${i===0?'checked':''} class="mr-2 accent-orange-500"><strong>${escapeHtml(p.brand)} •••• ${escapeHtml(p.last4)}</strong><p class="mt-1 text-xs text-gray-500">Expires ${String(p.expiry_month).padStart(2,'0')}/${String(p.expiry_year).slice(-2)}${p.is_default==1?' · Default':''}</p></label>`).join('');document.querySelectorAll('[name="payment_method"]').forEach(radio=>radio.addEventListener('change',()=>{document.querySelectorAll('[data-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.panel!==radio.value));hideError()}))});
 const shippingFields=['name','email','phone','address','city','province','postal_code'];
 if(!Array.isArray(cart)||!cart.length)location.href='cart.php';else if(shippingFields.some(field=>!String(shipping[field]||'').trim()))location.href='checkout.php';
 const total=cart.reduce((sum,item)=>sum+Number(item.price)*Math.max(1,Number(item.quantity)||1),0);

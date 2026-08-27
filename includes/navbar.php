@@ -2,9 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$inShopping = strpos(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? ''), '/shopping/') !== false;
-$rootPath = $inShopping ? '../' : '';
-$shopPath = $inShopping ? '' : 'shopping/';
+$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$inShopping = strpos($scriptPath, '/shopping/') !== false;
+$inProfile = strpos($scriptPath, '/profile/') !== false;
+$profileDepth = $inProfile ? substr_count(trim(substr($scriptPath, strpos($scriptPath, '/profile/') + 9), '/'), '/') + 1 : 0;
+$rootPath = $inShopping ? '../' : ($inProfile ? str_repeat('../', $profileDepth) : '');
+$shopPath = $inShopping ? '' : $rootPath . 'shopping/';
 ?>
 
 <div class="w-full px-10 flex justify-between items-center py-4">
@@ -24,7 +27,7 @@ $shopPath = $inShopping ? '' : 'shopping/';
 <div class="flex gap-6 items-center">
 
 <?php if (!empty($_SESSION['user_name'])) : ?>
-    <span class="text-sm">Hello, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+    <a href="<?php echo $rootPath; ?>profile/" class="text-sm hover:text-orange-500">Hello, <?php echo htmlspecialchars($_SESSION['user_name']); ?></a>
     <a href="<?php echo $shopPath; ?>logout.php" class="text-sm text-orange-500 hover:text-orange-600">Logout</a>
 <?php else : ?>
     <button onclick="openLogin()" class="text-sm">Login</button>

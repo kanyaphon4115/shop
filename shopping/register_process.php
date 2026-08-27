@@ -2,15 +2,19 @@
 session_start();
 include __DIR__ . "/../config/connection.php";
 
-$username = $_POST['username'];
-$email = $_POST['email'];
-$password = $_POST['password'];
+$username = trim($_POST['username'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
+if ($username === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 8) {
+    $_SESSION['register_error'] = 'Enter a name, valid email, and password of at least 8 characters.';
+    header('Location: ../index.php'); exit;
+}
 
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 // เช็ค email ซ้ำ
-$check = "SELECT * FROM users WHERE email='$email'";
-$result = mysqli_query($conn, $check);
+$stmt = $conn->prepare('SELECT id FROM users WHERE email=? LIMIT 1');
+$stmt->bind_param('s', $email); $stmt->execute(); $result = $stmt->get_result();
 
 if(mysqli_num_rows($result) > 0){
     $_SESSION['register_error'] = "Email already exists";
@@ -19,16 +23,16 @@ if(mysqli_num_rows($result) > 0){
 }
 
 // insert
-$sql = "INSERT INTO users (name, email, password)
-        VALUES ('$username', '$email', '$hashed_password')";
-
-if(mysqli_query($conn, $sql)){
+$stmt = $conn->prepare('INSERT INTO users (name,email,password) VALUES(?,?,?)');
+$stmt->bind_param('sss', $username, $email, $hashed_password);
+if($stmt->execute()){
     $_SESSION['user_id'] = (int) mysqli_insert_id($conn);
     $_SESSION['user_name'] = $username;
     $_SESSION['email'] = $email;
     header("Location: ../index.php");
     exit();
 }else{
-    echo "Error: " . mysqli_error($conn);
+    $_SESSION['register_error'] = 'Could not create account.';
+    header('Location: ../index.php'); exit;
 }
 ?>
