@@ -23,5 +23,10 @@ function account_user(mysqli $conn, int $id): array {
     $stmt->bind_param('i',$id); $stmt->execute(); return $stmt->get_result()->fetch_assoc() ?: [];
 }
 function account_redirect(string $page, string $message): void {
-    $_SESSION['account_flash']=$message; header('Location: ../profile/'.$page); exit;
+    $_SESSION['account_flash'] = $message;
+    $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    $siteBase = strstr($script, '/profile/', true);
+    if ($siteBase === false) $siteBase = '';
+    header('Location: ' . $siteBase . '/profile/' . ltrim($page, '/'));
+    exit;
 }
