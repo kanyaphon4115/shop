@@ -9,6 +9,16 @@ $profileDepth = $inProfile ? substr_count(trim(substr($scriptPath, strpos($scrip
 $rootPath = $inShopping ? '../' : ($inProfile ? str_repeat('../', $profileDepth) : '');
 $shopPath = $inShopping ? '' : $rootPath . 'shopping/';
 $currentPage = basename($_SERVER['PHP_SELF'] ?? 'index.php');
+$languageUserId = (int) ($_SESSION['user_id'] ?? 0);
+if ($languageUserId && (int) ($_SESSION['language_user_id'] ?? 0) !== $languageUserId && isset($conn) && $conn instanceof mysqli) {
+    $languageStmt = $conn->prepare('SELECT language FROM user_settings WHERE user_id=? LIMIT 1');
+    $languageStmt->bind_param('i', $languageUserId);
+    $languageStmt->execute();
+    $languageRow = $languageStmt->get_result()->fetch_assoc();
+    $_SESSION['language'] = in_array($languageRow['language'] ?? '', ['en', 'th'], true) ? $languageRow['language'] : 'en';
+    $_SESSION['language_user_id'] = $languageUserId;
+}
+$siteLanguage = in_array($_SESSION['language'] ?? '', ['en', 'th'], true) ? $_SESSION['language'] : 'en';
 ?>
 
 <div class="flex w-full flex-col items-center justify-between gap-4 px-4 py-1 sm:px-6 lg:flex-row lg:px-10">
@@ -55,4 +65,6 @@ $currentPage = basename($_SERVER['PHP_SELF'] ?? 'index.php');
     }
 })();
 </script>
+<script>window.SPARK_LANGUAGE=<?php echo json_encode($siteLanguage); ?>;</script>
+<script src="<?php echo $rootPath; ?>assets/i18n.js"></script>
 
