@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../config/connection.php';
+$purchaseLoggedIn = !empty($_SESSION['user_id']);
 $recommended = mysqli_query($conn, 'SELECT id, name, price, image FROM products ORDER BY created_at DESC LIMIT 6');
 function e($value): string { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); }
 ?>
@@ -51,7 +52,7 @@ document.querySelector('#cartList').addEventListener('change',e=>{if(e.target.ma
 document.querySelector('#selectAll').addEventListener('change',e=>{rows().forEach(r=>r.querySelector('.item-check').checked=e.target.checked);recalc()});
 document.querySelector('#deleteSelected').addEventListener('click',()=>{const selected=new Set(rows().filter(row=>row.querySelector('.item-check').checked).map(row=>row.dataset.key));cart=cart.filter(item=>!selected.has(itemKey(item)));saveCart();render()});
 document.querySelector('#voucherButton').addEventListener('click',()=>document.querySelector('#voucherNote').textContent='Voucher codes are not active yet; no discount was applied.');
-document.querySelector('#checkout').addEventListener('click',()=>{if(+document.querySelector('#selectedCount').textContent<1){alert('Please select at least one product.');return}location.href='checkout.php'});
+document.querySelector('#checkout').addEventListener('click',()=>{if(!<?php echo $purchaseLoggedIn?'true':'false'; ?>){alert('Please login to continue shopping.');location.href='../index.php?login=1&redirect='+encodeURIComponent(window.location.pathname+window.location.search);return}if(+document.querySelector('#selectedCount').textContent<1){alert('Please select at least one product.');return}location.href='checkout.php'});
 render();
 </script>
 </body></html>

@@ -1,4 +1,6 @@
-<?php session_start(); ?>
+<?php session_start();
+if (empty($_SESSION['user_id'])) { header('Location: ../index.php?login=1&redirect=' . rawurlencode($_SERVER['REQUEST_URI'] ?? '/shop/shopping/checkout.php')); exit; }
+?>
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shipping | SPARK</title><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="bg-gray-100 text-gray-900">
 <header class="bg-white shadow"><div class="flex items-center justify-between px-5 py-4 md:px-10"><a href="../index.php" class="text-3xl font-bold">SPARK</a><span class="text-sm text-gray-500">Secure checkout</span></div></header>

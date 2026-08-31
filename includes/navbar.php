@@ -8,23 +8,19 @@ $inProfile = strpos($scriptPath, '/profile/') !== false;
 $profileDepth = $inProfile ? substr_count(trim(substr($scriptPath, strpos($scriptPath, '/profile/') + 9), '/'), '/') + 1 : 0;
 $rootPath = $inShopping ? '../' : ($inProfile ? str_repeat('../', $profileDepth) : '');
 $shopPath = $inShopping ? '' : $rootPath . 'shopping/';
+$currentPage = basename($_SERVER['PHP_SELF'] ?? 'index.php');
 ?>
 
-<div class="w-full px-10 flex justify-between items-center py-4">
+<div class="flex w-full flex-col items-center justify-between gap-4 px-4 py-1 sm:px-6 lg:flex-row lg:px-10">
 
-<div class="flex gap-8 font-semibold text-sm">
+<div class="flex max-w-full items-center gap-5 overflow-x-auto whitespace-nowrap pb-2 text-xs font-semibold sm:gap-8 sm:text-sm lg:pb-0">
 
-<a href="<?php echo $rootPath; ?>index.php" class="hover:text-orange-500">HOME</a>
-<a href="<?php echo $shopPath; ?>products.php" class="hover:text-orange-500">SHOP</a>
-<a href="<?php echo $shopPath; ?>men.php" class="hover:text-orange-500">MEN</a>
-<a href="<?php echo $shopPath; ?>women.php" class="hover:text-orange-500">WOMEN</a>
-<a href="<?php echo $shopPath; ?>kids.php" class="hover:text-orange-500">KIDS</a>
-<a href="<?php echo $shopPath; ?>sale.php" class="hover:text-orange-500">SALE</a>
-<a href="<?php echo $shopPath; ?>blog.php" class="hover:text-orange-500">BLOG</a>
+<?php foreach([['index.php','HOME',$rootPath.'index.php'],['products.php','SHOP',$shopPath.'products.php'],['men.php','MEN',$shopPath.'men.php'],['women.php','WOMEN',$shopPath.'women.php'],['kids.php','KIDS',$shopPath.'kids.php'],['sale.php','SALE',$shopPath.'sale.php'],['blog.php','BLOG',$shopPath.'blog.php']] as $menu): $active=$currentPage===$menu[0]; ?>
+<a href="<?php echo $menu[2]; ?>" class="relative py-2 transition hover:text-orange-500 <?php echo $active?'text-orange-500 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-orange-500':''; ?>" <?php echo $active?'aria-current="page"':''; ?>><?php echo $menu[1]; ?></a><?php endforeach; ?>
 
 </div>
 
-<div class="flex gap-6 items-center">
+<div class="flex items-center gap-5 sm:gap-6">
 
 <?php if (!empty($_SESSION['user_name'])) : ?>
     <a href="<?php echo $rootPath; ?>profile/" class="text-sm hover:text-orange-500">Hello, <?php echo htmlspecialchars($_SESSION['user_name']); ?></a>

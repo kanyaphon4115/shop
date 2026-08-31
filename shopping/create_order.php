@@ -10,6 +10,10 @@ function reply(bool $ok, string $message, array $extra = [], int $status = 200):
     exit;
 }
 
+if (empty($_SESSION['user_id'])) {
+    reply(false, 'Please login to continue shopping.', ['login_required' => true, 'login_url' => '../index.php?login=1'], 401);
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     reply(false, 'Method not allowed.', [], 405);
 }
@@ -92,14 +96,7 @@ try {
         $verifiedItems[] = $item;
     }
 
-    $userId = (int) ($_SESSION['user_id'] ?? 0);
-    if (!$userId && !empty($_SESSION['email'])) {
-        $userStmt = mysqli_prepare($conn, 'SELECT id FROM users WHERE email = ? LIMIT 1');
-        mysqli_stmt_bind_param($userStmt, 's', $_SESSION['email']);
-        mysqli_stmt_execute($userStmt);
-        $user = mysqli_stmt_get_result($userStmt)->fetch_assoc();
-        $userId = (int) ($user['id'] ?? 0);
-    }
+    $userId = (int) $_SESSION['user_id'];
 
     $shippingJson = json_encode($shipping, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $paymentStatus = $statuses[$paymentMethod];

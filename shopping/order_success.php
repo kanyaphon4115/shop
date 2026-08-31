@@ -1,11 +1,13 @@
 <?php
 session_start();
+if (empty($_SESSION['user_id'])) { header('Location: ../index.php?login=1&redirect=' . rawurlencode($_SERVER['REQUEST_URI'] ?? '/shop/shopping/order_success.php')); exit; }
 require_once __DIR__ . '/../config/connection.php';
 
 $orderNumber = trim($_GET['order'] ?? '');
 $lastOrderId = (int) ($_SESSION['last_order_id'] ?? 0);
-$stmt = mysqli_prepare($conn, 'SELECT * FROM orders WHERE order_number = ? AND id = ? LIMIT 1');
-mysqli_stmt_bind_param($stmt, 'si', $orderNumber, $lastOrderId);
+$sessionUserId = (int) $_SESSION['user_id'];
+$stmt = mysqli_prepare($conn, 'SELECT * FROM orders WHERE order_number = ? AND id = ? AND user_id = ? LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'sii', $orderNumber, $lastOrderId, $sessionUserId);
 mysqli_stmt_execute($stmt);
 $order = mysqli_stmt_get_result($stmt)->fetch_assoc();
 if (!$order) {

@@ -48,6 +48,7 @@ $averageRating = (float) $reviewSummary['average_rating'];
 $_SESSION['review_csrf'] = $_SESSION['review_csrf'] ?? bin2hex(random_bytes(32));
 $reviewCsrf = $_SESSION['review_csrf'];
 $reviewLoggedIn = !empty($_SESSION['user_id']) || !empty($_SESSION['email']);
+$purchaseLoggedIn = !empty($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -223,6 +224,12 @@ function selectSize(el){
 <script>
 function buyNow(){
 
+    if (!<?php echo $purchaseLoggedIn ? 'true' : 'false'; ?>) {
+        alert('Please login to continue shopping.');
+        window.location.href = '../index.php?login=1&redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+        return;
+    }
+
     let size = document.getElementById("selectedSize").value
 
     if(size === ""){
@@ -236,6 +243,11 @@ function buyNow(){
 </script>
 <script>
 async function addToCart(){
+    if (!<?php echo $purchaseLoggedIn ? 'true' : 'false'; ?>) {
+        alert('Please login to continue shopping.');
+        window.location.href = '../index.php?login=1&redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+        return;
+    }
     const size = document.getElementById("selectedSize").value;
     if (!size) {
         alert("Please select a size");
