@@ -16,8 +16,7 @@ body{color:#222}.cart-check{accent-color:#f4511e}.step-line{height:1px;backgroun
 </style>
 </head>
 <body class="bg-gray-100">
-<header class="bg-white shadow-sm"><div class="flex items-center justify-between px-5 py-4 md:px-10"><a href="../index.php" class="text-3xl font-bold">SPARK</a><form action="search.php" method="get" class="header-search flex w-1/2"><select name="category" class="rounded-l border px-3" aria-label="Product category"><option value="all">All Categories</option><option value="men">Men</option><option value="women">Women</option><option value="kids">Kids</option><option value="sneakers">Sneakers</option><option value="sale">Sale</option></select><input name="q" class="flex-1 border px-4 py-2" placeholder="Search for more than 20,000 products"><button type="submit" class="rounded-r bg-orange-500 px-6 text-white" aria-label="Search">⌕</button></form></div></header>
-<nav class="nav-wrap border-t bg-white"><?php include __DIR__ . '/../includes/navbar.php'; ?></nav>
+<?php include __DIR__ . '/../includes/site_header.php'; ?>
 
 <main class="mx-auto max-w-[1500px] px-4 py-6">
 <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_370px]">

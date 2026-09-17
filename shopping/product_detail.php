@@ -60,40 +60,7 @@ $purchaseLoggedIn = !empty($_SESSION['user_id']);
 </head>
 
 <body class="bg-gray-100">
-<!-- HEADER -->
-
-<header class="bg-white shadow">
-
-<div class="w-full px-10 flex items-center justify-between py-4">
-<h1 class="text-3xl font-bold">
-SPARK
-</h1>
-
-<form action="search.php" method="get" class="flex w-1/2">
-
-<select name="category" class="border px-3 py-2 rounded-l" aria-label="Product category">
-<option value="all">All Categories</option>
-<option value="men">Men</option><option value="women">Women</option><option value="kids">Kids</option><option value="sneakers">Sneakers</option><option value="sale">Sale</option>
-</select>
-
-<input
-name="q"
-class="flex-1 border px-4 py-2"
-placeholder="Search for more than 20,000 products">
-
-<button type="submit" class="bg-blue-500 text-white px-6 rounded-r flex items-center justify-center hover:bg-blue-600 transition" aria-label="Search">
-🔍
-</button>
-
-</form>
-
-
-</div>
-
-</header>
-
-<!-- NAV -->
-<?php include "../includes/navbar.php"; ?>
+<?php include __DIR__ . '/../includes/site_header.php'; ?>
 
 <!-- PRODUCT DETAIL -->
 <section class="mx-auto mt-10 grid max-w-7xl gap-10 px-4 md:grid-cols-2 md:px-10">

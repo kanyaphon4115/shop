@@ -4,8 +4,7 @@ if (empty($_SESSION['user_id'])) { header('Location: ../index.php?login=1&redire
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment | SPARK</title><script src="https://cdn.tailwindcss.com"></script>
 <style>.method-card:has(input:checked){border-color:#f97316;background:#fff7ed}.qr-placeholder{background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 50%/18px 18px}</style></head>
 <body class="bg-gray-100 text-gray-900">
-<header class="bg-white shadow"><div class="flex items-center justify-between px-5 py-4 md:px-10"><a href="../index.php" class="text-3xl font-bold">SPARK</a><span class="text-sm text-gray-500">Secure checkout</span></div></header>
-<nav class="overflow-x-auto border-t bg-white"><div class="min-w-[720px]"><?php include __DIR__ . '/../includes/navbar.php'; ?></div></nav>
+<?php $headerNote = 'Secure checkout'; include __DIR__ . '/../includes/site_header.php'; ?>
 <main class="mx-auto max-w-7xl px-4 py-8">
 <div class="mb-8 flex items-center justify-center text-center text-xs md:text-sm"><a href="cart.php" class="text-gray-500"><b class="mx-auto block h-8 w-8 rounded-full border leading-7">1</b>Shopping Cart</a><i class="mx-3 h-px max-w-48 flex-1 bg-gray-300"></i><a href="checkout.php" class="text-gray-500"><b class="mx-auto block h-8 w-8 rounded-full border leading-7">2</b>Shipping</a><i class="mx-3 h-px max-w-48 flex-1 bg-gray-300"></i><div class="text-orange-600"><b class="mx-auto block h-8 w-8 rounded-full bg-orange-500 leading-8 text-white">3</b><strong>Payment</strong></div></div>
 <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">

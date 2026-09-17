@@ -52,19 +52,7 @@ $categoryLabels = ['all' => 'All Categories', 'men' => 'Men', 'women' => 'Women'
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
-<header class="bg-white shadow">
-<div class="flex w-full items-center justify-between px-4 py-4 md:px-10">
-<a href="../index.php" class="text-3xl font-bold">SPARK</a>
-<form action="search.php" method="get" class="ml-5 flex min-w-0 flex-1 md:w-1/2 md:flex-none">
-<select name="category" class="max-w-32 rounded-l border px-2 py-2 md:max-w-none md:px-3" aria-label="Product category">
-<?php foreach ($categoryLabels as $value => $label): ?><option value="<?php echo $value; ?>" <?php echo $category === $value ? 'selected' : ''; ?>><?php echo $label; ?></option><?php endforeach; ?>
-</select>
-<input name="q" value="<?php echo e($query); ?>" class="min-w-0 flex-1 border px-3 py-2 md:px-4" placeholder="Search for more than 20,000 products" aria-label="Search products">
-<button type="submit" class="rounded-r bg-blue-500 px-4 text-white transition hover:bg-blue-600 md:px-6" aria-label="Search">🔍</button>
-</form>
-</div>
-</header>
-<nav class="overflow-x-auto border-t bg-white"><div class="min-w-[720px]"><?php include __DIR__ . '/../includes/navbar.php'; ?></div></nav>
+<?php $searchCategory = $category; include __DIR__ . '/../includes/site_header.php'; ?>
 
 <main class="mx-auto max-w-7xl px-4 py-10 md:px-10">
 <div class="mb-7">
