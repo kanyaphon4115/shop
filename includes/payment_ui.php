@@ -1,0 +1,8 @@
+<?php
+function payment_icon(string $name): string {
+    $paths=['lock'=>'<rect x="4" y="10" width="16" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3m-5 5v3"/>','card'=>'<rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 10h20M6 15h2m2 0h2"/>','bolt'=>'<path d="m14 1-12 13h8l-1 9 13-14h-8l1-8Z"/>','returns'=>'<path d="M4 19A10 10 0 1 1 12 22M4 19v-6m0 6h6M12 2v8"/>'];
+    return '<svg class="pay-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.($paths[$name]??$paths['lock']).'</svg>';
+}
+function payment_brands(): string {return '<span class="pay-brands" aria-label="Visa, Mastercard, American Express, JCB"><span class="brand-visa">VISA</span><span class="brand-master" aria-hidden="true"></span><span class="brand-amex">AMERICAN<br>EXPRESS</span><span class="brand-jcb">JCB</span></span>';}
+function payment_placeholder(): string {return '<div class="pay-placeholder" aria-label="Card entry unavailable"><div class="fake-card"><span>1234 1234 1234 1234</span>'.payment_brands().'</div><div class="fake-split"><div class="fake-card">MM / YY</div><div class="fake-card">CVC <span>▣</span></div></div></div>';}
+function payment_steps(int $step=3): void {echo '<nav class="checkout-steps" aria-label="Checkout progress">';foreach([1=>['cart.php','Cart'],2=>['checkout.php','Shipping'],3=>['payment.php','Payment'],4=>['','Review']] as $n=>$item){if($n>1)echo '<i aria-hidden="true">›</i>'; $tag=$n<$step?'a':'span';echo '<'.$tag.($tag==='a'?' href="'.$item[0].'"':'').($n===$step?' class="active" aria-current="step"':'').'><b>'.$n.'</b>'.$item[1].'</'.$tag.'>'; }echo '</nav>';}
