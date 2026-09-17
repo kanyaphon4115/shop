@@ -10,8 +10,8 @@
 <button type="button" class="add-card-tile" data-open-card><span class="pay-card-icon"><?php echo payment_icon('card');?></span><span><strong>Add a new card</strong><small>Save your card securely with Stripe for faster checkout.</small></span><span class="arrow">›</span></button>
 <form id="saveCardForm" class="pay-add-form"><div class="pay-row"><h2>Add a new payment method</h2><button type="button" class="pay-close" aria-label="Close add payment method">×</button></div><p class="secure-intro"><?php echo payment_icon('lock');?> &nbsp; Your payment information is securely processed by Stripe.</p>
 <label class="pay-label">Card information</label><div id="cardElement"><?php echo payment_placeholder();?></div>
-<?php if(!$enabled):?><p class="pay-unavailable">Card saving is currently unavailable. Please try again later.</p><?php endif;?>
-<label class="pay-label" for="cardholder">Cardholder name</label><input id="cardholder" class="pay-input" autocomplete="cc-name" placeholder="Name on card" value="<?php echo account_e($user['name']);?>" required <?php echo !$enabled?'disabled':'';?>>
+<?php if(!$enabled):?><p class="pay-unavailable" role="status">Secure card entry is not connected yet. Card number, expiry and CVC entry will be available once the store enables Stripe.</p><?php endif;?>
+<label class="pay-label" for="cardholder">Cardholder name</label><input id="cardholder" class="pay-input" autocomplete="cc-name" placeholder="Name on card" value="<?php echo account_e($user['name']);?>" required>
 <label class="pay-check"><input type="checkbox" id="defaultCard" checked>Set as default payment method</label><div id="cardError" class="pay-error" role="alert"></div><button id="saveCard" class="pay-gold pay-wide" disabled>Save Card</button><p class="pay-note"><?php echo payment_icon('lock');?> &nbsp; Your card details are encrypted and never stored on our servers.</p></form>
 <script>window.sparkPayment=<?php echo json_encode(['key'=>$enabled?$config['publishable_key']:'','csrf'=>$csrf,'api'=>$base.'shopping/payment_api.php'],JSON_HEX_TAG|JSON_HEX_AMP);?>;</script>
 <?php if($enabled):?><script src="https://js.stripe.com/v3/"></script><?php endif;?>

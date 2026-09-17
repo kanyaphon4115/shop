@@ -4,6 +4,10 @@ The account and checkout pages keep the existing PHP/MySQL stack. Apply `add_str
 
 Set the Apache/PHP environment variables `STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, and `STRIPE_WEBHOOK_SECRET`. Restart Apache after changing environment variables. Start with matching Stripe test keys. Never put a secret key in JavaScript or source control.
 
+For local XAMPP development, you can instead enter your matching `pk_test_...` and `sk_test_...` keys in `config/payments.local.php` under `publishable_key` and `secret_key`, then refresh the page. This private file is excluded from Git. If it does not exist on a fresh checkout, create a PHP file returning an array with these keys. Environment variables override local settings. Keep the secret key private; do not paste it into chat. Configure `webhook_secret` separately for webhook verification.
+
+If card number, expiry, and CVC cannot be typed into, Stripe has not loaded: without both API keys the page shows a non-interactive preview, not live inputs. Once configured, Stripe Payment Element replaces this preview with secure fields. A service or loading error appears below the form if initialization fails.
+
 Register `/shop/shopping/stripe_webhook.php` as the HTTPS webhook endpoint for `payment_intent.succeeded`. A verified webhook records payment even if the customer closes their browser. The return flow also retrieves the PaymentIntent from Stripe and verifies its amount, currency, and order ID before marking payment paid. Orders retain their separate fulfillment status.
 
 `SHOP_CURRENCY` defaults to `usd`, matching the existing catalog. Set `thb` only when catalog prices actually represent baht. This setting does not convert product prices. This integration expects currencies with two decimal minor units.
