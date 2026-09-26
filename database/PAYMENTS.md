@@ -1,5 +1,11 @@
 # Payment setup
 
+## Mock UI mode (current default)
+
+The pages default to `mock` mode. Card number, expiry, CVC and cardholder name are editable using dummy data; no Stripe keys are needed. The Save Card and Test payment buttons only show a mock result. They do not transmit or persist card fields, create an order, mark an order paid, or clear the cart. Reloading discards the mock card input. Checkout still loads real cart prices through the read-only quote action.
+
+To restore Stripe mode, set the Apache/PHP environment variable `SHOP_PAYMENT_MODE=stripe` and configure the keys below. Restart Apache after changing environment variables. Do not enter real card data into the mock inputs.
+
 The account and checkout pages keep the existing PHP/MySQL stack. Apply `add_stripe_payments.sql` after the existing account/order migrations.
 
 Set the Apache/PHP environment variables `STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, and `STRIPE_WEBHOOK_SECRET`. Restart Apache after changing environment variables. Start with matching Stripe test keys. Never put a secret key in JavaScript or source control.

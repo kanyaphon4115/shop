@@ -1,11 +1,13 @@
 <?php session_start();
 if (empty($_SESSION['user_id'])) { header('Location: ../index.php?login=1&redirect=' . rawurlencode($_SERVER['REQUEST_URI'] ?? '/shop/shopping/checkout.php')); exit; }
+require_once __DIR__.'/../includes/account.php';
 ?>
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shipping | SPARK</title><link rel="stylesheet" href="../assets/payment.css"><script src="https://cdn.tailwindcss.com"></script></head>
 <body class="payment-page">
 
 <main class="checkout-shell shipping-shell"><section>
 <?php require_once __DIR__.'/../includes/payment_ui.php'; payment_steps(2); ?><h1 class="text-2xl font-bold">Shipping information</h1><p class="mt-2 text-sm text-gray-500">Choose a saved address or enter the delivery address.</p>
+<section class="pay-box order-summary" style="margin-top:22px"><div class="pay-row"><h2>Order Summary</h2><a class="pay-link" href="cart.php">Back to cart</a></div><div id="shippingItems" class="summary-items" aria-live="polite">Loading your products…</div><div class="pay-row" style="margin-top:16px;border-top:1px solid #e0e1e5;padding-top:14px"><strong>Total</strong><strong id="shippingOrderTotal">—</strong></div></section>
 <div id="savedAddresses" class="mt-6 hidden space-y-3"></div>
 <form id="shippingForm" class="mt-7 grid gap-5 sm:grid-cols-2">
 <label><span class="mb-2 block text-sm font-medium">Full name</span><input name="name" required autocomplete="name" class="w-full rounded border px-4 py-3 focus:border-yellow-700 focus:outline-none"></label>
@@ -17,12 +19,13 @@ if (empty($_SESSION['user_id'])) { header('Location: ../index.php?login=1&redire
 <label><span class="mb-2 block text-sm font-medium">Province</span><input name="province" required autocomplete="address-level1" class="w-full rounded border px-4 py-3 focus:border-yellow-700 focus:outline-none"></label>
 <label><span class="mb-2 block text-sm font-medium">Country</span><input name="country" required autocomplete="country-name" value="Thailand" class="w-full rounded border px-4 py-3 focus:border-yellow-700 focus:outline-none"></label><div class="mt-3 flex flex-col-reverse gap-3 sm:col-span-2 sm:flex-row sm:justify-between"><a href="cart.php" class="rounded border px-6 py-3 text-center hover:border-orange-500">← Back to Shopping Cart</a><button type="submit" class="pay-gold">Continue to Payment →</button></div>
 </form></section></main>
+<script src="../assets/checkout-items.js"></script>
+<script>window.sparkShippingCsrf=<?php echo json_encode(account_csrf());?>;</script>
+<script src="../assets/shipping-summary.js"></script>
 <script>
-const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-if (!Array.isArray(cart) || !cart.length) location.href = 'cart.php';
 const form = document.querySelector('#shippingForm');
 try { const saved = JSON.parse(localStorage.getItem('shippingInfo') || '{}'); Object.entries(saved).forEach(([key,value])=>{if(form.elements[key])form.elements[key].value=value}); } catch(error) { localStorage.removeItem('shippingInfo'); }
 const esc=v=>String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 fetch('account_data.php').then(r=>r.json()).then(data=>{if(!data.authenticated)return;if(form.elements.email&&!form.elements.email.value)form.elements.email.value=data.user.email||'';if(!data.addresses.length)return;const box=document.querySelector('#savedAddresses');box.classList.remove('hidden');box.innerHTML='<h2 class="font-bold">Saved addresses</h2>'+data.addresses.map((a,i)=>`<label class="block cursor-pointer rounded border p-4"><input type="radio" name="saved_address" value="${a.id}" ${i===0?'checked':''} class="mr-2 accent-yellow-700"><b>${esc(a.label)}</b>${a.is_default==1?' <span class="text-xs text-yellow-700">Default</span>':''}<p class="ml-6 mt-1 text-sm text-gray-600">${esc(a.full_name)} · ${esc(a.phone)}<br>${esc(a.address_line)}, ${esc(a.subdistrict)} ${esc(a.district)}, ${esc(a.province)} ${esc(a.postal_code)}, ${esc(a.country)}</p></label>`).join('')+'<button type="button" id="newAddress" class="text-sm text-yellow-700">Use a new address</button>';function use(a){const vals={name:a.full_name,email:data.user.email,phone:a.phone,address:a.address_line,city:[a.subdistrict,a.district].filter(Boolean).join(', '),province:a.province,postal_code:a.postal_code,country:a.country,address_id:a.id};Object.entries(vals).forEach(([k,v])=>{if(form.elements[k])form.elements[k].value=v});localStorage.setItem('shippingInfo',JSON.stringify(vals))}if(!form.elements.name.value)use(data.addresses[0]);box.querySelectorAll('[name=saved_address]').forEach(el=>el.addEventListener('change',()=>use(data.addresses.find(a=>String(a.id)===el.value))));document.querySelector('#newAddress').onclick=()=>{box.querySelectorAll('input').forEach(x=>x.checked=false);form.reset();form.elements.email.value=data.user.email||''}});
-form.addEventListener('submit', event => { event.preventDefault(); if (!form.reportValidity()) return; const shipping = Object.fromEntries(new FormData(form).entries()); localStorage.setItem('shippingInfo', JSON.stringify(shipping)); location.href = 'payment.php'; });
+form.addEventListener('submit', event => { event.preventDefault(); if (form.querySelector('button[type=submit]').disabled || !form.reportValidity()) return; const shipping = Object.fromEntries(new FormData(form).entries()); localStorage.setItem('shippingInfo', JSON.stringify(shipping)); location.href = 'payment.php' + location.search; });
 </script></body></html>
